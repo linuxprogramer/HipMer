@@ -1,0 +1,67 @@
+MESSAGE("Building meraligner ${CMAKE_BUILD_TYPE} UPC code using '${CMAKE_UPC_COMPILER} ${CMAKE_UPC_FLAGS}' to compile UPC code")
+
+ADD_DEFINITIONS(-DMERACULOUS -DSYNC_PROTOCOL -DMARK_POS_IN_CONTIG -DPROFILE -DSTORE_OPT)
+ADD_DEFINITIONS(-DUSE_UPC_FOR_COMMON)
+
+# fix linking when objects are from multiple languages
+set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "")
+set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "")
+set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "stdc++")
+set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "")
+
+SET(CMAKE_EXE_LINKER_FLAGS)
+
+IF(NOT HIPMER_SLACK)
+    SET(HIPMER_SLACK 20)
+ENDIF()
+IF(NOT HIPMER_CHUNK_SIZE)
+    SET(HIPMER_CHUNK_SIZE 100)
+ENDIF()
+
+ADD_LIBRARY(ssw OBJECT ssw.c)
+
+#SET(UPC_CODE fasta.c merAligner.c mem_reporter.c splitter.c)
+SET(UPC_CODE fasta.c merAligner.c mem_reporter.c)
+
+# set dependencies to ensure header files are recompiled
+# just make it recompile any source files when headers change
+SET_SOURCE_FILES_PROPERTIES(${UPC_CODE} PROPERTIES LANGUAGE "UPC" )
+SET_SOURCE_FILES_PROPERTIES(${UPC_CODE} PROPERTIES 
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/aligningPhase.h"
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/fasta.h"
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/packingDNAseq2.h"
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/buildSeedIndex.h"
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/ssw.h"
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cache_infrastructure.h"
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/merAligner.h"
+    OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/contigDB.h"
+    OBJECT_DEPENDS "${CMAKE_SOURCE_DIR}/src/hipmer/fqreader/fq_reader.h"
+    OBJECT_DEPENDS "${CMAKE_SOURCE_DIR}/src/hipmer/common/common.h"
+    OBJECT_DEPENDS "${CMAKE_SOURCE_DIR}/src/hipmer/common/optlist.h"
+    OBJECT_DEPENDS "${CMAKE_SOURCE_DIR}/src/hipmer/common/kmer_hash2.h"
+    OBJECT_DEPENDS "${CMAKE_SOURCE_DIR}/src/hipmer/common/upc_compatibility.h")
+
+
+FOREACH(HIPMER_KMER_LEN ${HIPMER_KMER_LENGTHS})
+    SET(EXTRA_DEFS -DUSE_SWCACHE -DSLACK=${HIPMER_SLACK} -DINCLUDE_BLASTMAP -DBLAST_PROFILE -DCHUNK_SIZE=${HIPMER_CHUNK_SIZE})
+    ADD_EXECUTABLE(merAligner-${HIPMER_KMER_LEN} merAligner.c
+        $<TARGET_OBJECTS:ssw> 
+        $<TARGET_OBJECTS:upc_common>
+        $<TARGET_OBJECTS:Buffer>
+        $<TARGET_OBJECTS:UPC_FQ_OBJS>)
+    ADD_DEPENDENCIES(merAligner-${HIPMER_KMER_LEN} REPLACE_VERSION_H)
+    SET_TARGET_PROPERTIES(merAligner-${HIPMER_KMER_LEN} 
+        PROPERTIES LINKER_LANGUAGE "UPC" LINK_LIBRARIES "z")
+    INSTALL(TARGETS merAligner-${HIPMER_KMER_LEN} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+    target_compile_definitions(merAligner-${HIPMER_KMER_LEN} PUBLIC ${EXTRA_DEFS})
+    add_kmer_defs(merAligner-${HIPMER_KMER_LEN})
+
+#        ADD_EXECUTABLE(splitter-R${HIPMER_READ_LENGTH}-${HIPMER_KMER_LEN} splitter.c $<TARGET_OBJECTS:upc_common>)
+#        SET_TARGET_PROPERTIES(splitter-R${HIPMER_READ_LENGTH}-${HIPMER_KMER_LEN} PROPERTIES LINKER_LANGUAGE "UPC")
+#        INSTALL(TARGETS splitter-R${HIPMER_READ_LENGTH}-${HIPMER_KMER_LEN} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+#        target_compile_definitions(splitter-R${HIPMER_READ_LENGTH}-${HIPMER_KMER_LEN} PUBLIC ${EXTRA_DEFS})
+#        target_link_libraries(splitter-R${HIPMER_READ_LENGTH}-${HIPMER_KMER_LEN} -lm)
+#        add_kmer_defs(splitter-R${HIPMER_READ_LENGTH}-${HIPMER_KMER_LEN})
+ENDFOREACH()
+
+#SET(TEST_THREADS 4)

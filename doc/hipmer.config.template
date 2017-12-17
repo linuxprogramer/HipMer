@@ -1,0 +1,104 @@
+###################################
+#
+#  HipMer 1.0 config file
+#
+###################################
+
+
+
+
+# For every sequencing library, a separate lib_seq parameter line should be given. The following are the mandatory arguments that must be given as values-only on a single line, in the exact order they're listed here, separated by one or more spaces or tabs. None can be omitted.
+
+# lib_seq [ wildcard ][ prefix ][ insAvg ][ insSdev ][ avgReadLn ][ hasInnieArtifact ][ isRevComped ][ useForContigging ][ onoSetID ][ useForGapClosing ][ 5pWiggleRoom ][3pWiggleRoom] [filesPerPair] [ useForSplinting ]
+#
+
+# [ wildcard ]  - A bash-style expression defining the full path to the sequence files for a single library. If fwd and rev read pairs are in separate files, then two wildcards should be provided, separated by a comma, without spaces. 
+
+# [ name ] (caps, numbers) -   Name of the library
+
+# [ insertAvg ] - Estimated average insert size in bp
+
+# [ insertSdev ] - Estimated std deviation of insert size in bp
+
+# [ avgReadLn ]  - Estimated average read length in bp
+
+# [ hasInnieArtifact] (0|1) - Whether or not a significant fraction of read pairs is in nondominant orientation, e.g. "innies" in an "outie" library or vice versa. (0=false, 1=true) 
+
+# [ isRevComped ] (0|1) - Whether or not the read pairs are in the "outie" orientation, i.e <-- -->. (0=false, 1=true) 
+
+# [ useForContiging ] (0|1) - Whether or not to use this libray for initial contig generation. Our recommendation is to use only paired-end libraries for this purpose. (0=false, 1=true)
+
+# [ scaffRound ] - Assigns the library to a scaffolding round. Libraries of the same type and similar insert size should be grouped into the same round for the sake of performance. To completely exclude a library from being used in scaffolding, set this to 0. (positive integers, can be non-consecutive)
+
+# [ useForGapClosing ] (0|1) - Whether or not to use this library for gap closing. It's best to use the same libraries that were used for contig generation for this purpose. (0=false, 1=true) 
+
+# [ 5p_wiggleRoom ] - During linkage analysis and gap closure, allow reads from this library to have an unaligned 5' end up to this many bp. This option is for cases when a library is known to contain untrimmed adapter sequence. (positive integer, 0 for default behavior) 
+
+# [ 3p_wiggleRoom ] - During linkage analysis and gap closure, allow reads from this library to have an unaligned 3' end up to this many bp. This option can be used when the library is of poor sequence quality at the 3' end. Beware that allowing reads to map with large unaligned segments can potentially lead to erroneus linkage and other problems in the assembly. Use at your own risk! (positive integer, 0 for default behavior)
+
+
+# [ filesPerPair ] (0|1|2)  - Specifies how the reads are paired in the input file: 0 - unpaired, 1 - pairs in the same file (interleaved),  2 - read1 and read2 of the pair are in different files (fragment order preserved in both files; no unpaired reads allowed)
+
+# [ useForSplinting ] (0|1) - Whether or not to use reads from this library to "splint" small gaps during scaffolding.  Splints are single reads aligning across two contigs, which can be used to determine the gap size more precisely and to confirm/reject a less precise but wider reaching pairwise linkage (aka "spans"). We recommend using only fragment libraries for splinting.    
+
+
+
+# Example 1:  two sets of files - one with fwd reads and one with reverse
+
+lib_seq /path/to/some.fastq*.0,/path/to/some.fastq*.1  ECO1     200     20  36   0 0  1 1 1  0 0  2 1
+
+# Example 2:  one set of files, all with fwd/rev reads interleaved, 20 bp of 5' untrimmed adapter, 35 bp of 3' low qulity sequence
+
+lib_seq /path/to/some.fastq  			       ECO2     200     20  100  0 0  0 1 0  20 35 1 1
+
+
+
+# estimated genome size in Gb
+#
+genome_size 	   1.0
+
+
+# The k-mer size to use
+#
+mer_size 31
+
+
+# Is this a diploid genome?  If so, HipMer will attempt to
+# identify and merge haplotype variants (bubbles in the k-mer graph)
+# See also 'bubble_min_depth_cutoff'
+# [0|1]
+#
+is_diploid 0
+
+
+# K-mers present at frequencies less than this cutoff get culled from the assembly
+# early on.  To auto-detect, set to 0 
+#
+min_depth_cutoff 0
+
+
+# For diploid organisms, this is the depth cutoff to exclude unresolved haplotypes.
+# To auto-detect, set to 0.
+# To keep both haplotypes in cases where they couldn't be merged, set it to 1  (Note, this will hinder gap closing and scaffolding)
+#
+bubble_min_depth_cutoff 0
+
+
+# min mercount to report: counts below this threshold will not be output by the mercounter.
+# Typically you would leave this at 2.
+#
+min_mercount_to_report  2
+
+
+# Scaffolds with depth of coverage this many times higher than the average across all scaffolds are considered repeats
+# and won't participate in gap closure
+# 
+gap_close_rpt_depth_ratio   2.0
+
+
+# Close gaps more aggressively accepting closures that might violate the estimated gap size
+#
+gap_close_aggressive 1
+
+
+

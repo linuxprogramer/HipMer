@@ -1,0 +1,50 @@
+# https://github.com/Kitware/CMake/blob/master/Modules/CMakeAddNewLanguage.txt
+#
+# used by CMakeDetermine(LANG)Compiler.cmake
+#  This file is used to store compiler information and is copied down into try
+#  compile directories so that try compiles do not need to re-determine and test the LANG
+
+set(CMAKE_UPC_COMPILER "@CMAKE_UPC_COMPILER@")
+set(CMAKE_UPC_COMPILER_ID "@CMAKE_UPC_COMPILER_ID@")
+set(CMAKE_UPC_FLAGS_INIT "@CMAKE_UPC_FLAGS_INIT@")
+set(CMAKE_UPC_SOURCE_FILE_EXTENSIONS "@CMAKE_UPC_SOURCE_FILE_EXTENSIONS@")
+set(CMAKE_UPC_COMPILER_LOADED 1)
+
+set(CMAKE_UPC_LINKER_PREFERENCE 100)
+set(CMAKE_UPC_LINKER_PREFERENCE_PROPAGATES 1)
+set(CMAKE_UPC_OUTPUT_EXTENSION .o)
+set(CMAKE_UPC_OUTPUT_EXTENSION_REPLACE 1)
+set(CMAKE_STATIC_LIBRARY_PREFIX_UPC "lib")
+set(CMAKE_STATIC_LIBRARY_SUFFIX_UPC ".a")
+set(CMAKE_UPC_COMPILER_ENV_VAR "UPC_COMPILER")
+set(CMAKE_UPC_LINKER_PREFERENCE_PROPAGATES False)
+set(CMAKE_UPC_IMPLICIT_LINK_LIBRARIES "")
+set(CMAKE_UPC_IMPLICIT_LINK_DIRECTORIES "")
+
+MACRO(TARGET_ADD_DEFINITIONS_TO_LINK_FLAGS TARGET)
+      # Some UPC linking required definitions to be present too (like -pthreads)
+      GET_TARGET_PROPERTY(_defs ${TARGET} COMPILE_DEFINITIONS)
+      GET_PROPERTY(_defs2 DIRECTORY . PROPERTY COMPILE_DEFINITIONS)
+      GET_TARGET_PROPERTY(_link_flags ${TARGET} LINK_FLAGS)
+      GET_PROPERTY(_includes DIRECTORY . PROPERTY INCLUDE_DIRECTORIES)
+      IF(NOT _link_flags)
+        SET(_link_flags "")
+      ENDIF()
+      FOREACH(_item ${_includes})
+        SET(_link_flags "${_link_flags} -I${_item}")
+      ENDFOREACH()
+      IF(_defs OR _defs2)
+        FOREACH(_item ${_defs} ${_defs2})
+          STRING(SUBSTRING ${_item} 0 1 _is_dash)
+          IF(${_is_dash} STREQUAL "-")
+            SET(_link_flags "${_link_flags} ${_item}")
+          ELSE()
+            SET(_link_flags "${_link_flags} -D${_item}")
+          ENDIF()
+        ENDFOREACH()
+      ENDIF() 
+      SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_FLAGS "${_link_flags}")
+      MESSAGE(STATUS "Set UPC LINK_FLAGS for ${TARGET}: ${_link_flags}")
+ENDMACRO()
+
+message("Loaded cached UPC Compiler Variables ${CMAKE_UPC_COMPILER} ${CMAKE_UPC_FLAGS_INIT}")

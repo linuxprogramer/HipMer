@@ -1,0 +1,42 @@
+#
+# Local parameters defenitions file, required by meraculous.pl.
+#
+#
+# A description of the columns and valid values that will be recognized.
+#
+# Column 1 - keyname (user-defined)
+#
+# Column 2 - sets CONFIG_KEY_REQ to determine whether a key is required.
+#            Valid values = {"required", "optional"}
+#
+# Column 3 - sets CONFIG_UNIQ_KEY if a key can have multiple entries in
+#            a configuration file, i.e., keyword "wgs" (for wgs library)
+#	     can have multiple library entries
+#            Valid values = {"uniq_key", "nonuniq_key"}
+#
+# Column 4 - sets CONFIG_KEY_TYPE. Give it a "="-delimited list of value types
+#            Types of values include: string, integer, positive integer, 
+#				      float, file, and directory.
+#            Valid values = {"string", "int", "pos_int", 
+#	                     "float",  "file", "dir"}
+#
+
+assembly_dir				optional	uniq_key	string
+local_resume_checkpoint			optional	uniq_key	string
+autocalibrated_min_depth_cutoff 	optional 	uniq_key	pos_int
+autocalibrated_bubble_depth_cutoff	optional	uniq_key	pos_int
+autoselected_mer_size			optional	uniq_key	pos_int
+start_stage				optional	uniq_key	string
+prev_round_srf				optional	uniq_key	string
+prev_round_max_insert			optional        uniq_key        int
+lib_insert_size_recalc			optional	nonuniq_key	string=int=int
+lib_qoffset				optional	nonuniq_key	string=int
+
+
+### Core user parameters that we want to keep track of on a stage-by-stage basis
+
+mer_size      		 		optional	uniq_key	pos_int
+num_prefix_blocks			optional	uniq_key	pos_int
+is_diploid                              optional 	uniq_key 	int
+local_num_procs				optional	uniq_key	pos_int
+cluster_slots_per_task			optional	uniq_key	pos_int

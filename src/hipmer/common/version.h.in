@@ -1,0 +1,14 @@
+#ifndef HIPMER_VERSION_H
+#define HIPMER_VERSION_H
+
+ /* WARNING WARNING WARNING WARNING WARNING WARNING
+  *
+  * DO NOT EDIT version.h directly, it is not tracked in the repo as it is automatically
+  *             generated from version.h.in
+  *
+  *  WARNING WARNING WARNING WARNING WARNING WARNING
+ */
+
+#define HIPMER_VERSION "@HIPMER_VERSION@"
+
+#endif

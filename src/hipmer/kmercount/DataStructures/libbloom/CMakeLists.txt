@@ -1,0 +1,12 @@
+
+message("Building libbloom")
+add_subdirectory(murmur2)
+include_directories(murmur2)
+
+if(HIPMER_BLOOM64)
+add_library(LIBBLOOM OBJECT bloom64.c)
+else()
+add_library(LIBBLOOM OBJECT bloom.c)
+endif()
+
+

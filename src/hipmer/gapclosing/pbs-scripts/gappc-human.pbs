@@ -1,0 +1,36 @@
+#PBS -j oe
+#PBS -V
+#PBS -m abe
+#PBS -M shofmeyr@lbl.gov
+
+# run with (qname = debug, premium, regular, etc)
+# qsub -q qname -l mppwidth=480,walltime=00:30:00 pbs-scripts/gappc-human.pbs
+
+cd $PBS_O_WORKDIR/
+
+N=`cat $PBS_NODEFILE|wc -l`
+
+merAlignerOutputDir=human$N/merAlignerOutput_ 
+
+cache_files=false
+
+if [ "$cache_files" = true ]; then
+    upcrun -q -n$N load_meraligner_files human$N/ 0 
+    upcrun -q -n$N load_meraligner_files human$N/ 1
+    upcrun -q -n$N ./loadfq human/s_1_\*_sequence.fq
+    merAlignerOutputDir=/dev/shm/merAlignerOutput_
+fi
+
+upcrun -shared-heap=1GB -q -n$N \
+	   ./merauder -i393 -I43 -m51 -D4 -R1.75 -A -P \
+	   -f human/s_1_\*_sequence.fq \
+	   -s human$N/FsrfFile_ \
+	   -c human$N/FASTAcontigs_ \
+	   -a merAlignerOutputDir \
+	   -o human/results/n$N \
+	   -b 0,1
+
+if [ "$cache_files" = true ]; then
+    upcrun -q -n$N ./unloadfq human/s_1_\*_sequence.fq
+    aprun -n$N rm -rf /dev/shm/*
+fi

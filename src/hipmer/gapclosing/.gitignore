@@ -1,0 +1,13 @@
+*.o
+*.out
+*.err
+results
+tests
+lala*
+gaga*
+dbg*
+merauder
+merauder.*
+unloadfq
+loadfq
+

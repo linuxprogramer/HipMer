@@ -1,0 +1,7 @@
+PrgEnv-gnu/4.8
+cmake
+openmpi
+hdf5-parallel
+perl
+gnuplot
+boost/1.57.0

@@ -1,0 +1,14 @@
+HIPMER_VERSION
+src/hipmer/common/version.h
+dev
+opt
+build*/
+install*/
+*.log
+slurm-*.out
+hipmer-test-*.o*
+hipmer-test-*.po*
+hipmer_*_data
+.dir-locals.el
+test_hipmer_*.o*
+test_hipmer_*.po*

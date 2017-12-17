@@ -1,0 +1,16 @@
+These are the final stages of the HipMer pipeline. From the original meraculous, they are the gap placing and closing (merauder).
+
+To make on edison, run
+
+make -f Makefile.edison
+
+To check the parameters, run 
+
+upcrun ./merauder --help
+
+For more details about running on edison, look at the sample script: pbs-scripts/gappc-human.pbs
+
+In this script the number of nodes is automatically determined from the $PBS_NODEFILE env variable.
+
+An optional include is to define the $cache_files variable to true. This will cause the input files to be read into memory and the actual code will read them from memory. Within the pipeline, it is expected that other stages will put these files into memory if caching is used. However, caching them explicitly here enables us to time this stage while excluding disk I/O overheads.
+

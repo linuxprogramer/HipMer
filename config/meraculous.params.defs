@@ -1,0 +1,96 @@
+#
+# User and advanced user parameters defenitions file, required by jazz.pl.
+#
+#
+# A description of the columns and valid values that will be recognized.
+#
+# Column 1 - keyname (user-defined)
+#
+# Column 2 - sets CONFIG_KEY_REQ to determine whether a key is required.
+#            Valid values = {"required", "optional"}
+#
+# Column 3 - sets CONFIG_UNIQ_KEY if a key can have multiple entries in
+#            a configuration file, i.e., keyword "wgs" (for wgs library)
+#	     can have multiple library entries
+#            Valid values = {"uniq_key", "nonuniq_key"}
+#
+# Column 4 - sets CONFIG_KEY_TYPE. Give it a "="-delimited list of value types
+#            Types of values include: string, integer, positive integer, 
+#				      float, file, and directory.
+#            Valid values = {"string", "int", "pos_int", 
+#	                     "float",  "file", "dir", "free" }
+#
+
+
+genus	optional	uniq_key	string
+species	optional	uniq_key        string
+strain	optional	uniq_key        string
+
+lib_seq 				required	nonuniq_key	string=string=pos_int=pos_int=pos_int=pos_int=pos_int=pos_int=pos_int=pos_int=pos_int=pos_int=pos_int=pos_int
+
+genome_size				required uniq_key float
+num_prefix_blocks			required uniq_key pos_int
+mer_size				optional uniq_key pos_int
+min_depth_cutoff		optional uniq_key pos_int
+min_mercount_to_report 			optional uniq_key pos_int
+is_diploid				optional uniq_key pos_int
+bubble_min_depth_cutoff 		optional uniq_key pos_int
+no_read_validation			optional uniq_key pos_int
+gap_close_aggressive			optional uniq_key pos_int
+gap_close_rpt_depth_ratio		optional uniq_key float
+fallback_on_est_insert_size		optional uniq_key pos_int
+
+
+local_num_procs			optional	 uniq_key	pos_int
+local_max_memory		optional	uniq_key	pos_int
+local_max_retries	optional	uniq_key	pos_int
+
+use_cluster		optional	uniq_key	pos_int
+cluster_queue		optional	uniq_key	string
+cluster_project		optional	uniq_key	string
+cluster_walltime	optional	uniq_key	string
+cluster_num_jobs	optional	uniq_key	pos_int
+cluster_max_retries	optional	uniq_key	pos_int
+cluster_ram_request	optional	uniq_key	pos_int	
+cluster_slots_per_task	optional	uniq_key	pos_int
+
+
+cluster_walltime_meraculous_import	optional	uniq_key	string
+cluster_walltime_meraculous_mercount	optional	uniq_key	string
+cluster_walltime_meraculous_mergraph	optional	uniq_key	string
+cluster_walltime_meraculous_ufx		optional	uniq_key	string
+cluster_walltime_meraculous_contigs	optional	uniq_key	string
+cluster_walltime_meraculous_bubble	optional	uniq_key	string
+cluster_walltime_meraculous_merblast	optional	uniq_key	string
+cluster_walltime_meraculous_ono		optional	uniq_key	string
+cluster_walltime_meraculous_gap_closure	optional	uniq_key	string
+
+cluster_ram_meraculous_import		optional	uniq_key	pos_int
+cluster_ram_meraculous_mercount		optional	uniq_key	pos_int
+cluster_ram_meraculous_mergraph		optional	uniq_key	pos_int
+cluster_ram_meraculous_ufx		optional	uniq_key	pos_int
+cluster_ram_meraculous_contigs		optional	uniq_key	pos_int
+cluster_ram_meraculous_bubble		optional	uniq_key	pos_int
+cluster_ram_meraculous_merblast		optional	uniq_key	pos_int
+cluster_ram_meraculous_ono		optional	uniq_key	pos_int
+cluster_ram_meraculous_gap_closure	optional	uniq_key	pos_int
+
+num_procs_meraculous_import	optional	uniq_key	pos_int
+num_procs_meraculous_mercount	optional	uniq_key	pos_int
+num_procs_meraculous_mergraph	optional	uniq_key	pos_int
+num_procs_meraculous_ufx	optional	uniq_key	pos_int
+num_procs_meraculous_contigs	optional	uniq_key	pos_int
+num_procs_meraculous_bubble 		optional	uniq_key	pos_int
+num_procs_meraculous_merblast 		optional	uniq_key	pos_int
+num_procs_meraculous_ono 		optional	uniq_key	pos_int
+num_procs_meraculous_gap_closure 	optional	uniq_key	pos_int
+
+
+#
+#currently inactive:
+
+external_contigs_file 		optional 	uniq_key 	string
+num_linking_pairs_cutoff 	optional uniq_key pos_int
+min_contig_size_for_scaffold_links 	optional uniq_key pos_int
+min_qual_to_keep 			optional uniq_key pos_int
+email_addr				optional uniq_key string

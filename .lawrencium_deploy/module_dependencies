@@ -1,0 +1,6 @@
+cmake
+intel/2015.0.090
+perl
+boost
+berkeley_upc/2.20.2-intel
+gnuplot

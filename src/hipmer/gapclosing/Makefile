@@ -1,0 +1,44 @@
+CC=upcc
+CFLAGS+=-DCONFIG_USE_COLORS 
+CFLAGS+=-DCONFIG_SANITY_CHECK
+CFLAGS+=-DCONFIG_SHOW_PROGRESS
+CFLAGS+=-shared-heap=1000MB
+CFLAGS+=-Wc,-Wall -Wc,-Wno-unused-function
+CFLAGS+=-Wc,-Wno-unused-label 
+CFLAGS+=-network=smp
+#CFLAGS+=-pthreads=$(T)
+#CFLAGS+=-g
+#CFLAGS+=-save-temps
+CFLAGS+=-DUSE_UPC_FOR_COMMON
+
+OBJS=htable.o utils.o config.o gaps.o timers.o fq_reader.o
+HDRS=htable.h colors.h gaps.h utils.h config.h timers.h fq_reader.h
+
+%.o: %.c %.h $(HDRS) Makefile
+	$(CC) $< -c $(CFLAGS) -o $@
+
+merauder: merauder4.c $(OBJS) $(HDRS) Makefile 
+	$(CC) merauder4.c $(OBJS) $(CFLAGS) -o $@
+
+FQ_OBJS=utils.o timers.o fq_reader.o
+FQ_HDRS=utils.h colors.h timers.h fq_reader.h
+
+loadfq: loadfq.c $(FQ_OBJS) $(FQ_HDRS) Makefile
+	$(CC) loadfq.c $(FQ_OBJS) $(CFLAGS) -o $@
+
+unloadfq: unloadfq.c  $(FQ_OBJS) $(FQ_HDRS) Makefile
+	$(CC) unloadfq.c $(FQ_OBJS) $(CFLAGS) -o $@
+
+
+ca: canonical_assembly.c utils.o tracing.o tracing.h utils.h Makefile
+	$(CC) canonical_assembly.c utils.o tracing.o $(CFLAGS) -o $@
+
+SHM_OBJS=utils.o timers.o
+SHM_HDRS=utils.h colors.h timers.h
+
+load_meraligner_files: load_meraligner_files.c  $(SHM_OBJS) $(SHM_HDRS) Makefile
+	$(CC) load_meraligner_files.c $(SHM_OBJS) $(CFLAGS) -o $@
+
+clean:
+	rm -fr *.o 
+
